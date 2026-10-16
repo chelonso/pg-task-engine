@@ -26,6 +26,10 @@ Zero external message brokers required (No Redis, BullMQ, or RabbitMQ). Native p
 ## 📦 Installation
 
 ```bash
+# Directly from GitHub repository:
+npm install github:chelonso/pg-task-engine zod
+
+# Or via npm registry:
 npm install @shared/pg-task-engine zod
 ```
 
@@ -40,7 +44,7 @@ npm install hono
 # For Express
 npm install express @types/express
 
-# For Supabase
+# For Supabase SDK (optional, only if using createSupabaseAdapter instead of createSupabaseRestAdapter)
 npm install @supabase/supabase-js
 ```
 
@@ -154,7 +158,8 @@ export const { GET, POST, DELETE } = createTaskEngineNextHandler(engine);
 
 | Adapter | Import | Usage |
 |---|---|---|
-| **Supabase** | `@shared/pg-task-engine/db` | `createSupabaseAdapter(supabaseClient)` |
+| **Supabase REST (Zero Deps)** | `@shared/pg-task-engine/db` | `createSupabaseRestAdapter({ url, serviceKey, schema? })` |
+| **Supabase (JS SDK)** | `@shared/pg-task-engine/db` | `createSupabaseAdapter(supabaseClient)` |
 | **Prisma** | `@shared/pg-task-engine/db` | `createPrismaAdapter(prismaClient)` |
 | **Drizzle** | `@shared/pg-task-engine/db` | `createDrizzleAdapter(drizzleDb)` |
 | **PostgreSQL (`pg` / `postgres.js`)** | `@shared/pg-task-engine/db` | `createPgAdapter(poolOrClient)` |
