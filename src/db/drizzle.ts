@@ -125,13 +125,12 @@ export function createDrizzleAdapter(
     async recordScheduledLog(log): Promise<{ id: string }> {
       const rows = await runSql<{ id: string }>(
         `INSERT INTO ${schema}.scheduled_job_logs
-         (scheduled_job_id, tenant_id, target_path, status, triggered_by, started_at, finished_at, duration_ms, response_payload, error_message)
-         VALUES ($1::uuid, $2::uuid, $3, $4, $5, $6::timestamptz, $7::timestamptz, $8, $9::jsonb, $10)
+         (job_id, tenant_id, status, triggered_by, started_at, finished_at, duration_ms, response_payload, error_message)
+         VALUES ($1::uuid, $2::uuid, $3, $4, $5::timestamptz, $6::timestamptz, $7, $8::jsonb, $9)
          RETURNING id`,
         [
           log.scheduledJobId,
           log.tenantId,
-          log.targetPath,
           log.status,
           log.triggeredBy,
           log.startedAt,
