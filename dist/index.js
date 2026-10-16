@@ -222,18 +222,18 @@ var TaskHttpController = class {
     try {
       const body = await request.json().catch(() => ({}));
       const tenantId = body.tenantId || body.tenant_id;
-      const eventType = body.eventType || body.event_type;
+      const eventName = body.eventName || body.event_name || body.eventType || body.event_type;
       const payload = body.payload ?? {};
       const source = body.source || "api";
-      if (!tenantId || !eventType) {
+      if (!tenantId || !eventName) {
         return new Response(
-          JSON.stringify({ error: "Missing required parameters: tenantId, eventType" }),
+          JSON.stringify({ error: "Missing required parameters: tenantId, event_name" }),
           { status: 400, headers: { "Content-Type": "application/json" } }
         );
       }
       const result = await this.engine.events.publish({
         tenantId,
-        eventType,
+        eventName,
         payload,
         source
       });
