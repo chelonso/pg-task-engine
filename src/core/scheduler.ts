@@ -98,6 +98,7 @@ export class TaskScheduler {
       // 4. Update audit log (success)
       if (this.db.recordScheduledLog) {
         await this.db.recordScheduledLog({
+          id: logId || undefined,
           scheduledJobId: jobId,
           tenantId,
           targetPath,
@@ -128,6 +129,7 @@ export class TaskScheduler {
       if (this.db.recordScheduledLog) {
         try {
           await this.db.recordScheduledLog({
+            id: logId || undefined,
             scheduledJobId: jobId,
             tenantId,
             targetPath,

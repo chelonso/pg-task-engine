@@ -41,6 +41,7 @@ export class TaskHttpController {
         JSON.stringify({
           success: true,
           jobId: result.id,
+          job_id: result.id,
           status: result.status,
           message: 'Task successfully enqueued'
         }),

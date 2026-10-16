@@ -11,6 +11,7 @@ export { TaskHttpController } from './core/http-handlers.js';
 export {
   resolveDatabaseAdapter,
   createSupabaseAdapter,
+  createSupabaseRestAdapter,
   createPrismaAdapter,
   createDrizzleAdapter,
   createPgAdapter

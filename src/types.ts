@@ -83,6 +83,7 @@ export interface DatabaseAdapter<TRawClient = unknown> {
    * Records execution audit for scheduled cron jobs.
    */
   recordScheduledLog?(log: {
+    id?: string;
     scheduledJobId: string;
     tenantId: string;
     targetPath: string;
