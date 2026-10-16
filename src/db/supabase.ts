@@ -151,9 +151,8 @@ export function createSupabaseAdapter(
 
       const res = await getTable('scheduled_job_logs')
         .insert({
-          scheduled_job_id: log.scheduledJobId,
+          job_id: log.scheduledJobId,
           tenant_id: log.tenantId,
-          target_path: log.targetPath,
           status: log.status,
           triggered_by: log.triggeredBy,
           started_at: log.startedAt,
@@ -461,9 +460,8 @@ export function createSupabaseRestAdapter(
           Prefer: 'return=representation'
         },
         body: JSON.stringify({
-          scheduled_job_id: log.scheduledJobId,
+          job_id: log.scheduledJobId,
           tenant_id: log.tenantId,
-          target_path: log.targetPath,
           status: log.status,
           triggered_by: log.triggeredBy,
           started_at: log.startedAt,

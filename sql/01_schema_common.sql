@@ -83,7 +83,7 @@ CREATE INDEX IF NOT EXISTS idx_scheduled_jobs_active ON common.scheduled_jobs (i
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS common.scheduled_job_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    scheduled_job_id UUID NOT NULL,
+    job_id UUID NOT NULL REFERENCES common.scheduled_jobs(id) ON DELETE CASCADE,
     tenant_id UUID NOT NULL,
     target_path VARCHAR(255) NOT NULL,
     status VARCHAR(50) NOT NULL CHECK (status IN ('running', 'success', 'failed')),
