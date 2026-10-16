@@ -1,0 +1,106 @@
+{
+  "name": "@shared/pg-task-engine",
+  "version": "1.0.0",
+  "description": "High-performance, decoupled background job queue, cron scheduler, and domain events engine for PostgreSQL and TypeScript with native adapters for Fastify, Hono, Express, and Next.js.",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./fastify": {
+      "types": "./dist/adapters/fastify/index.d.ts",
+      "import": "./dist/adapters/fastify/index.mjs",
+      "require": "./dist/adapters/fastify/index.js"
+    },
+    "./hono": {
+      "types": "./dist/adapters/hono/index.d.ts",
+      "import": "./dist/adapters/hono/index.mjs",
+      "require": "./dist/adapters/hono/index.js"
+    },
+    "./express": {
+      "types": "./dist/adapters/express/index.d.ts",
+      "import": "./dist/adapters/express/index.mjs",
+      "require": "./dist/adapters/express/index.js"
+    },
+    "./next": {
+      "types": "./dist/adapters/next/index.d.ts",
+      "import": "./dist/adapters/next/index.mjs",
+      "require": "./dist/adapters/next/index.js"
+    },
+    "./db": {
+      "types": "./dist/db/index.d.ts",
+      "import": "./dist/db/index.mjs",
+      "require": "./dist/db/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "sql",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "postgres",
+    "postgresql",
+    "queue",
+    "background-jobs",
+    "cron",
+    "scheduler",
+    "domain-events",
+    "skip-locked",
+    "fastify",
+    "hono",
+    "express",
+    "nextjs",
+    "typescript",
+    "zod"
+  ],
+  "author": "GiStar Architecture Team",
+  "license": "MIT",
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.9",
+    "express": "^4.19.2",
+    "fastify": "^4.28.1",
+    "hono": "^4.4.7",
+    "tsup": "^8.1.0",
+    "typescript": "^5.5.2"
+  },
+  "peerDependencies": {
+    "@supabase/supabase-js": ">=2.0.0",
+    "express": ">=4.0.0",
+    "fastify": ">=4.0.0",
+    "hono": ">=4.0.0",
+    "next": ">=13.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@supabase/supabase-js": {
+      "optional": true
+    },
+    "express": {
+      "optional": true
+    },
+    "fastify": {
+      "optional": true
+    },
+    "hono": {
+      "optional": true
+    },
+    "next": {
+      "optional": true
+    }
+  }
+}
