@@ -96,9 +96,8 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- ----------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION common.fn_publish_domain_event(
     p_tenant_id UUID,
-    p_event_type VARCHAR,
-    p_payload JSONB DEFAULT '{}'::jsonb,
-    p_source VARCHAR DEFAULT 'system'
+    p_event_name VARCHAR,
+    p_payload JSONB DEFAULT '{}'::jsonb
 )
 RETURNS UUID AS $$
 DECLARE
@@ -106,14 +105,12 @@ DECLARE
 BEGIN
     INSERT INTO common.domain_events (
         tenant_id,
-        event_type,
-        payload,
-        source
+        event_name,
+        payload
     ) VALUES (
         p_tenant_id,
-        p_event_type,
-        COALESCE(p_payload, '{}'::jsonb),
-        COALESCE(p_source, 'system')
+        p_event_name,
+        COALESCE(p_payload, '{}'::jsonb)
     )
     RETURNING id INTO v_event_id;
 
@@ -142,27 +139,20 @@ BEGIN
     FOR v_sub IN 
         SELECT target_path 
         FROM common.event_subscriptions 
-        WHERE tenant_id = v_event.tenant_id 
-          AND event_type = v_event.event_type 
-          AND is_active = true
+        WHERE event_name = v_event.event_name
     LOOP
         PERFORM common.fn_enqueue_job(
             v_event.tenant_id,
             v_sub.target_path,
             jsonb_build_object(
                 'event_id', v_event.id,
-                'event_type', v_event.event_type,
+                'event_name', v_event.event_name,
                 'event_payload', v_event.payload,
                 'published_at', v_event.created_at
             )
         );
         v_count := v_count + 1;
     END LOOP;
-
-    UPDATE common.domain_events
-    SET status = 'processed',
-        processed_at = NOW()
-    WHERE id = p_event_id;
 
     RETURN v_count;
 END;
@@ -171,5 +161,5 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Grant execution permissions
 GRANT EXECUTE ON FUNCTION common.fn_poll_next_job() TO authenticated, service_role;
 GRANT EXECUTE ON FUNCTION common.fn_enqueue_job(UUID, VARCHAR, JSONB, TIMESTAMP WITH TIME ZONE, INTEGER) TO authenticated, service_role;
-GRANT EXECUTE ON FUNCTION common.fn_publish_domain_event(UUID, VARCHAR, JSONB, VARCHAR) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION common.fn_publish_domain_event(UUID, VARCHAR, JSONB) TO authenticated, service_role;
 GRANT EXECUTE ON FUNCTION common.fn_process_domain_event(UUID) TO authenticated, service_role;

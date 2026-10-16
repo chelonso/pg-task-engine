@@ -7,27 +7,50 @@ export class DomainEventsManager {
    * Publishes a domain event into the common.domain_events outbox table.
    */
   async publish(options: DomainEventOptions): Promise<{ id: string; status: 'pending' }> {
+    const eventName = options.eventName || options.event_name || options.eventType;
     if (!options.tenantId) {
       throw new Error('DomainEvents: tenantId is required for multi-tenant isolation.');
     }
-    if (!options.eventType) {
-      throw new Error('DomainEvents: eventType is required.');
+    if (!eventName) {
+      throw new Error('DomainEvents: eventName is required.');
     }
 
+    // 1. Try RPC fn_publish_domain_event
     const { data, error } = await this.db.rpc<string>('fn_publish_domain_event', {
       p_tenant_id: options.tenantId,
-      p_event_type: options.eventType,
-      p_payload: options.payload ?? {},
-      p_source: options.source ?? 'system'
+      p_event_name: eventName,
+      p_payload: options.payload ?? {}
     });
 
-    if (error || !data) {
-      throw new Error(
-        `DomainEvents: Failed to publish event: ${error?.message || 'No ID returned'}`
-      );
+    if (!error && data) {
+      return { id: typeof data === 'object' && (data as any)?.id ? (data as any).id : String(data), status: 'pending' };
     }
 
-    return { id: data, status: 'pending' };
+    // 2. Direct table insert fallback
+    if (this.db.raw && typeof (this.db.raw as any).query === 'function') {
+      try {
+        const rows = await (this.db.raw as any).query('domain_events', {
+          method: 'POST',
+          schema: 'common',
+          headers: { Prefer: 'return=representation' },
+          body: JSON.stringify({
+            tenant_id: options.tenantId,
+            event_name: eventName,
+            payload: options.payload ?? {}
+          })
+        });
+        const id = Array.isArray(rows) && rows[0]?.id ? rows[0].id : 'event-' + Date.now();
+        return { id, status: 'pending' };
+      } catch (insertErr: any) {
+        throw new Error(`DomainEvents: Failed to publish event: ${insertErr?.message || error?.message}`);
+      }
+    }
+
+    if (error || !data) {
+      throw new Error(`DomainEvents: Failed to publish event: ${error?.message || 'No ID returned'}`);
+    }
+
+    return { id: String(data), status: 'pending' };
   }
 
   /**

@@ -179,7 +179,9 @@ export interface JobStatusResponse {
 
 export interface DomainEventOptions {
   tenantId: string;
-  eventType: string;
+  eventType?: string;
+  eventName?: string;
+  event_name?: string;
   payload?: unknown;
   source?: string;
 }

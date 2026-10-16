@@ -21,24 +21,43 @@ var DomainEventsManager = class {
    * Publishes a domain event into the common.domain_events outbox table.
    */
   async publish(options) {
+    const eventName = options.eventName || options.event_name || options.eventType;
     if (!options.tenantId) {
       throw new Error("DomainEvents: tenantId is required for multi-tenant isolation.");
     }
-    if (!options.eventType) {
-      throw new Error("DomainEvents: eventType is required.");
+    if (!eventName) {
+      throw new Error("DomainEvents: eventName is required.");
     }
     const { data, error } = await this.db.rpc("fn_publish_domain_event", {
       p_tenant_id: options.tenantId,
-      p_event_type: options.eventType,
-      p_payload: options.payload ?? {},
-      p_source: options.source ?? "system"
+      p_event_name: eventName,
+      p_payload: options.payload ?? {}
     });
-    if (error || !data) {
-      throw new Error(
-        `DomainEvents: Failed to publish event: ${error?.message || "No ID returned"}`
-      );
+    if (!error && data) {
+      return { id: typeof data === "object" && data?.id ? data.id : String(data), status: "pending" };
     }
-    return { id: data, status: "pending" };
+    if (this.db.raw && typeof this.db.raw.query === "function") {
+      try {
+        const rows = await this.db.raw.query("domain_events", {
+          method: "POST",
+          schema: "common",
+          headers: { Prefer: "return=representation" },
+          body: JSON.stringify({
+            tenant_id: options.tenantId,
+            event_name: eventName,
+            payload: options.payload ?? {}
+          })
+        });
+        const id = Array.isArray(rows) && rows[0]?.id ? rows[0].id : "event-" + Date.now();
+        return { id, status: "pending" };
+      } catch (insertErr) {
+        throw new Error(`DomainEvents: Failed to publish event: ${insertErr?.message || error?.message}`);
+      }
+    }
+    if (error || !data) {
+      throw new Error(`DomainEvents: Failed to publish event: ${error?.message || "No ID returned"}`);
+    }
+    return { id: String(data), status: "pending" };
   }
   /**
    * Processes an outbox domain event, evaluating subscriptions and enqueuing jobs.
