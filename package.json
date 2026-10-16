@@ -16,7 +16,17 @@
       "import": "./dist/adapters/fastify/index.mjs",
       "require": "./dist/adapters/fastify/index.js"
     },
+    "./adapters/fastify": {
+      "types": "./dist/adapters/fastify/index.d.ts",
+      "import": "./dist/adapters/fastify/index.mjs",
+      "require": "./dist/adapters/fastify/index.js"
+    },
     "./hono": {
+      "types": "./dist/adapters/hono/index.d.ts",
+      "import": "./dist/adapters/hono/index.mjs",
+      "require": "./dist/adapters/hono/index.js"
+    },
+    "./adapters/hono": {
       "types": "./dist/adapters/hono/index.d.ts",
       "import": "./dist/adapters/hono/index.mjs",
       "require": "./dist/adapters/hono/index.js"
@@ -26,7 +36,17 @@
       "import": "./dist/adapters/express/index.mjs",
       "require": "./dist/adapters/express/index.js"
     },
+    "./adapters/express": {
+      "types": "./dist/adapters/express/index.d.ts",
+      "import": "./dist/adapters/express/index.mjs",
+      "require": "./dist/adapters/express/index.js"
+    },
     "./next": {
+      "types": "./dist/adapters/next/index.d.ts",
+      "import": "./dist/adapters/next/index.mjs",
+      "require": "./dist/adapters/next/index.js"
+    },
+    "./adapters/next": {
       "types": "./dist/adapters/next/index.d.ts",
       "import": "./dist/adapters/next/index.mjs",
       "require": "./dist/adapters/next/index.js"
